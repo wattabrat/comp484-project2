@@ -132,6 +132,7 @@ init3D();
       pikachu_info['happiness'] += 1;
       // Increase pet weight
       pikachu_info['weight'] += 1;
+      pikachuSound.currentTime = 0;
       pikachuSound.play();
       switchAnimation(animations.jump);
       showMessage("pika - pika! (˶>⩊<˶)");
@@ -145,6 +146,7 @@ init3D();
       pikachu_info['weight'] -= 1;
       switchAnimation(animations.jump)
       showMessage("pika - pika! (˶>⩊<˶)");
+      pikachuSound.currentTime = 0;
       pikachuSound.play();
       checkAndUpdatePetInfoInHtml();
     }
@@ -169,7 +171,7 @@ init3D();
      if (pikachu_info['sleep'] == true) return;
 
       pikachu_info['sleep'] = true;
-      switchAnimation(animations.idle);
+      sleepSound.currentTime = 0;
       sleepSound.play();
       showMessage(" ᶻ 𝘇 𐰁 (っ. -｡)");
       
@@ -181,7 +183,7 @@ init3D();
         showMessage("pika - pika! (˶>⩊<˶)");
         $(document).trigger('wakeup');
         checkAndUpdatePetInfoInHtml();
-      }, 5000); //5s
+      }, 5000); //10s
     }
 
 
@@ -197,20 +199,37 @@ if (pikachu_info['weight'] < 0) pikachu_info['weight'] = 0;
 if (pikachu_info['happiness'] < 0) pikachu_info['happiness'] = 0;
 
 if (pikachu_info['happiness'] >= maxHappiness)
-    {
-      pikachu_info['happiness'] = maxHappiness;
+{
+  pikachu_info['happiness'] = maxHappiness;
+  
+  if (currentAction !== animations.dance){
+      pikachuDance.currentTime = 0;
+      pikachuDance.play()
       switchAnimation(animations.dance);
-      pikachuDance.play();
-    }
+      showMessage("૮₍´｡ᵔ ꈊ ᵔ｡`₎ა");
+      setTimeout(() => {
+        pikachu_info['happiness'] -= 1;
+        switchAnimation(animations.idle);
+        checkAndUpdatePetInfoInHtml();
+    }, 7000);
+  }
+}
+
 }
     
 // Updates your HTML with the current values in your pet_info object
-function updatePetInfoInHtml()
- {
-      $('.name').text(pikachu_info['name']);
-      $('.weight').text(pikachu_info['weight']);
-      $('.happiness').text(pikachu_info['happiness']);
-      $('.sleep').text(pikachu_info['sleep'] ? "Sleeping" : "Awake");
+function updatePetInfoInHtml() {
+  $('.name').text(pikachu_info['name']);
+  $('.weight').text(pikachu_info['weight']);
+  $('.happiness').text(pikachu_info['happiness']);
+  $('.sleep').text(pikachu_info['sleep'] ? 'Sleeping' : 'Awake');
+
+  // update bar widths
+  const happinessPercent = (pikachu_info['happiness'] / maxHappiness) * 100;
+  $('.bar-happy').css('width', happinessPercent + '%');
+
+  const weightPercent = (pikachu_info['weight'] / 20) * 100; // 20 = max weight
+  $('.bar-weight').css('width', Math.min(weightPercent, 100) + '%');
 }
 
 function showMessage(message)
