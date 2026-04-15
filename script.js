@@ -175,13 +175,14 @@ init3D();
       pikachu_info['sleep'] = true;
       sleepSound.currentTime = 0;
       sleepSound.play();
-      showMessage(" ᶻ 𝘇 𐰁 (っ. -｡)");
+      switchAnimation(animations.idle);
+      showMessage(" ᶻ 𝘇 𐰁 (っ. -｡) pikachu is sleeping");
 
       //sleep timer
       setTimeout(() => {
         pikachu_info['sleep'] = false;
         switchAnimation(animations.jump);
-        showMessage("pika is awake!");
+        showMessage("pikachu is awake!");
         //using trigger to notify listeners that the wakeup event was triggered
         $(document).trigger('wakeup');
         checkAndUpdatePetInfoInHtml();
@@ -211,11 +212,14 @@ if (pikachu_info['happiness'] >= maxHappiness)
       pikachuDance.play()
       switchAnimation(animations.dance);
       showMessage("૮₍´｡ᵔ ꈊ ᵔ｡`₎ა");
+
+      //time to switch back to the idle animation once the dance is done
       setTimeout(() => {
         pikachu_info['happiness'] -= 1;
         switchAnimation(animations.idle);
         checkAndUpdatePetInfoInHtml();
-    }, 7000);
+
+    }, 10000); //10s
   }
 }
 
