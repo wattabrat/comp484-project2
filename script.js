@@ -119,6 +119,8 @@ init3D();
     checkAndUpdatePetInfoInHtml();
   
     // When each button is clicked, it will "call" function for that button (functions are below)
+    //listening for click event
+
     $('.treat-button').on('click', clickedTreatButton);
     $('.play-button').on('click', clickedPlayButton);
     $('.exercise-button').on('click', clickedExerciseButton);
@@ -174,19 +176,21 @@ init3D();
       sleepSound.currentTime = 0;
       sleepSound.play();
       showMessage(" ᶻ 𝘇 𐰁 (っ. -｡)");
-      
 
       //sleep timer
       setTimeout(() => {
         pikachu_info['sleep'] = false;
         switchAnimation(animations.jump);
-        showMessage("pika - pika! (˶>⩊<˶)");
+        showMessage("pika is awake!");
+        //using trigger to notify listeners that the wakeup event was triggered
         $(document).trigger('wakeup');
         checkAndUpdatePetInfoInHtml();
       }, 6000); //10s
     }
 
-
+  
+//using on to create a custom wakeup event to be triggered
+//after pikachu is done sleeping
 $(document).on('wakeup', function(){
   sleepSound.pause();
   sleepSound.currentTime = 0;
