@@ -6,7 +6,7 @@ let scene, camera, renderer, pikachuModel, mixer;
 let timer = new Timer();
 let animations = {};
 let currentAction;
-
+let maxHappiness = 10;
 function init3D() {
 
   //window size
@@ -29,12 +29,12 @@ function init3D() {
 
   //lights
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  scene.add(directionalLight);
   directionalLight.position.set(0, 1, 1).normalize();
+  scene.add(directionalLight);
 
   const ambientLight = new THREE.AmbientLight(0xeac8ca, 2);
   scene.add(ambientLight);
-  scene.background = new THREE.Color(0xeac8ca);
+  scene.background = new THREE.Color(0xf9e4ec);
 
 
   //load model (GLB format)
@@ -45,12 +45,19 @@ function init3D() {
 
     mixer = new THREE.AnimationMixer(pikachuModel);
 
+    //setting actions for each animation in the model
     animations = {
       walk: mixer.clipAction(gltf.animations[0]),
       dance: mixer.clipAction(gltf.animations[1]),
       jump: mixer.clipAction(gltf.animations[2]),
       idle: mixer.clipAction(gltf.animations[3])
     };
+
+    animations.jump.setLoop(THREE.LoopRepeat, 2);
+
+    mixer.addEventListener('finished', () => {
+      switchAnimation(animations.idle);
+    });
 
     currentAction = animations.idle;
     currentAction.play();
@@ -83,7 +90,7 @@ function animate()
 
 function switchAnimation(newAction)
 {
-  if (currentAction === newAction) return;
+  if (!currentAction || currentAction === newAction) return;
 
    currentAction.fadeOut(0.5);
    newAction.reset().fadeIn(0.5).play();
@@ -94,8 +101,8 @@ function switchAnimation(newAction)
 
 
 
-//variable to hold pet information (name, weight, happiness)
-var pikachu_info = {name:"Pikachu", weight:10, happiness:5};
+//variable to hold pet information (name, weight, happiness, sleep state)
+var pikachu_info = {name:"Pikachu", weight:10, happiness:5, sleep:false};
 
 
 
@@ -107,19 +114,21 @@ init3D();
     checkAndUpdatePetInfoInHtml();
   
     // When each button is clicked, it will "call" function for that button (functions are below)
-    $('.treat-button').click(clickedTreatButton);
-    $('.play-button').click(clickedPlayButton);
-    $('.exercise-button').click(clickedExerciseButton);
+    $('.treat-button').on('click', clickedTreatButton);
+    $('.play-button').on('click', clickedPlayButton);
+    $('.exercise-button').on('click', clickedExerciseButton);
+    $('.sleep-button').on('click', clickedSleepButton);
 
   });
-  
+    
   
     function clickedTreatButton() {
       // Increase pet happiness
       pikachu_info['happiness'] += 1;
       // Increase pet weight
       pikachu_info['weight'] += 1;
-      switchAnimation(animations.jump.setLoop(THREE.LoopRepeat, 2));
+      switchAnimation(animations.jump);
+      showMessage("pika - pika! (˶>⩊<˶)");
       checkAndUpdatePetInfoInHtml();
     }
     
@@ -129,6 +138,7 @@ init3D();
       // Decrease pet weight
       pikachu_info['weight'] -= 1;
       switchAnimation(animations.jump)
+      showMessage("pika - pika! (˶>⩊<˶)");
       checkAndUpdatePetInfoInHtml();
     }
     
@@ -137,7 +147,8 @@ init3D();
       pikachu_info['happiness'] -= 1;
       // Decrease pet weight
       pikachu_info['weight'] -= 1;
-      switchAnimation(animations.idle)
+      switchAnimation(animations.walk);
+      showMessage(".·°՞(っ-ᯅ-ς)՞°·.");
       checkAndUpdatePetInfoInHtml();
     }
   
@@ -146,17 +157,40 @@ init3D();
       updatePetInfoInHtml();
     }
     
-   function checkWeightAndHappinessBeforeUpdating() {
+    function clickedSleepButton() {
+      // Toggle sleep state
+     if (pikachu_info['sleep'] == true) return;
+      pikachu_info['sleep'] = true;
+      switchAnimation(animations.idle);
+      showMessage(" ᶻ 𝘇 𐰁 (っ. -｡)");
+      setTimeout(() => {
+        pikachu_info['sleep'] = false;
+        switchAnimation(animations.jump);
+        showMessage("pika - pika! (˶>⩊<˶)");
+      }, 5000); 
+    }
 
-    if (pikachu_info['weight'] < 0) pikachu_info['weight'] = 0;
-    if (pikachu_info['happiness'] < 0) pikachu_info['happiness'] = 0;
-    if (pikachu_info['happiness'] == 10) switchAnimation(animations.dance);
+
+function checkWeightAndHappinessBeforeUpdating()
+{
+if (pikachu_info['weight'] < 0) pikachu_info['weight'] = 0;
+if (pikachu_info['happiness'] < 0) pikachu_info['happiness'] = 0;
+
+if (pikachu_info['happiness'] >= maxHappiness)
+    {pikachu_info['happiness'] = maxHappiness;
+      switchAnimation(animations.dance);}
 }
     
-    // Updates your HTML with the current values in your pet_info object
-    function updatePetInfoInHtml() {
+// Updates your HTML with the current values in your pet_info object
+function updatePetInfoInHtml()
+ {
       $('.name').text(pikachu_info['name']);
       $('.weight').text(pikachu_info['weight']);
       $('.happiness').text(pikachu_info['happiness']);
-    }
-  
+      $('.sleep').text(pikachu_info['sleep'] ? "Sleeping" : "Awake");
+}
+
+function showMessage(message)
+{
+  $('#message').finish().text(message).fadeIn(500).fadeOut(2000);
+}
