@@ -7,18 +7,23 @@ let timer = new Timer();
 let animations = {};
 let currentAction;
 let maxHappiness = 10;
+
+const pikachuSound = new Audio('sounds/pikachu.mp3');
+const sleepSound = new Audio('sounds/8-bitHealing.mp3');
+const pikachuDance = new Audio('sounds/pikachuDance.mp3');
+
 function init3D() {
 
   //window size
-  const SIZE = 500;
+  const SIZE = 600;
 
   // set up scene
   scene = new THREE.Scene();
 
  //set up camera
-  camera = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
-  camera.position.z = 2;
-  camera.position.y = 1;
+  camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+  camera.position.z = 1.7;
+  camera.position.y = 1.5;
   camera.lookAt(0, 1, 0);
 
   //renderer
@@ -127,6 +132,7 @@ init3D();
       pikachu_info['happiness'] += 1;
       // Increase pet weight
       pikachu_info['weight'] += 1;
+      pikachuSound.play();
       switchAnimation(animations.jump);
       showMessage("pika - pika! (˶>⩊<˶)");
       checkAndUpdatePetInfoInHtml();
@@ -139,6 +145,7 @@ init3D();
       pikachu_info['weight'] -= 1;
       switchAnimation(animations.jump)
       showMessage("pika - pika! (˶>⩊<˶)");
+      pikachuSound.play();
       checkAndUpdatePetInfoInHtml();
     }
     
@@ -160,16 +167,29 @@ init3D();
     function clickedSleepButton() {
       // Toggle sleep state
      if (pikachu_info['sleep'] == true) return;
+
       pikachu_info['sleep'] = true;
       switchAnimation(animations.idle);
+      sleepSound.play();
       showMessage(" ᶻ 𝘇 𐰁 (っ. -｡)");
+      
+
+      //sleep timer
       setTimeout(() => {
         pikachu_info['sleep'] = false;
         switchAnimation(animations.jump);
         showMessage("pika - pika! (˶>⩊<˶)");
-      }, 5000); 
+        $(document).trigger('wakeup');
+        checkAndUpdatePetInfoInHtml();
+      }, 5000); //5s
     }
 
+
+$(document).on('wakeup', function(){
+  sleepSound.pause();
+  sleepSound.currentTime = 0;
+  checkAndUpdatePetInfoInHtml();
+});
 
 function checkWeightAndHappinessBeforeUpdating()
 {
@@ -177,8 +197,11 @@ if (pikachu_info['weight'] < 0) pikachu_info['weight'] = 0;
 if (pikachu_info['happiness'] < 0) pikachu_info['happiness'] = 0;
 
 if (pikachu_info['happiness'] >= maxHappiness)
-    {pikachu_info['happiness'] = maxHappiness;
-      switchAnimation(animations.dance);}
+    {
+      pikachu_info['happiness'] = maxHappiness;
+      switchAnimation(animations.dance);
+      pikachuDance.play();
+    }
 }
     
 // Updates your HTML with the current values in your pet_info object

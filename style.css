@@ -7,7 +7,7 @@
 
 .page {
   padding: 1.5rem;
-  background: var(--color-background-primary);
+  background: #fbfcf3;
 }
 
 body {
@@ -17,24 +17,24 @@ body {
 }
 
 h1 {
-  font-size: 22px;
+  font-size: 29px;
   font-weight: 500;
-  color: var(--color-text-primary);
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 0.5px solid var(--color-border-tertiary);
+  color: #965f83;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 0.5px;
 }
 
 .layout {
   display: flex;
-  gap: 2rem;
+  gap: 16px;
   align-items: flex-start;
   flex-wrap: wrap;
 }
 
 .canvas-box {
-  width: 300px;
-  height: 300px;
+  width: 600px;
+  height: 600px;
   background: #f9e4ec;
   border-radius: 20px;
   display: flex;
@@ -107,10 +107,10 @@ h1 {
 }
 
 .status-badge {
-  display: inline-block;
-  font-size: 12px;
+  
+  font-size: 18px;
   padding: 3px 10px;
-  border-radius: 99px;
+  border-radius: 100px;
   background: #fce8f0;
   color: #c05080;
   margin-top: 4px;
@@ -129,7 +129,7 @@ h1 {
 .buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 9px;
   margin-top: 4px;
 }
 
@@ -148,9 +148,10 @@ h1 {
   border: 0.5px solid #f0c0d0;
   border-radius: 12px;
   padding: 10px 14px;
-  font-size: 13px;
+  font-size: 17px;
   color: #a04060;
   margin-top: 8px;
+  
 }
 
 button {
@@ -185,12 +186,6 @@ button {
   color: #7040b0;
 }
 
-#pet-canvas-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-  border-radius: 20px;
-}
 
 #pet-canvas-container {
   width: 100%;
@@ -199,4 +194,12 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+#pet-canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  border-radius: 11px;
 }
