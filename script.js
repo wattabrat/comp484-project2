@@ -183,7 +183,7 @@ init3D();
         showMessage("pika - pika! (˶>⩊<˶)");
         $(document).trigger('wakeup');
         checkAndUpdatePetInfoInHtml();
-      }, 5000); //10s
+      }, 6000); //10s
     }
 
 

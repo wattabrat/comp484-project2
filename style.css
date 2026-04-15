@@ -94,6 +94,7 @@ h1 {
 .stat-bar {
   height: 8px;
   border-radius: 99px;
+  transition: width 0.3s ease;
 }
 
 .bar-happy {
