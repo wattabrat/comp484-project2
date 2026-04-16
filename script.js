@@ -1,3 +1,4 @@
+//imports for 3D model
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Timer } from 'three/addons/misc/Timer.js';
@@ -8,13 +9,14 @@ let animations = {};
 let currentAction;
 let maxHappiness = 10;
 
+//sounds
 const pikachuSound = new Audio('sounds/pikachu.mp3');
 const sleepSound = new Audio('sounds/8-bitHealing.mp3');
 const pikachuDance = new Audio('sounds/pikachuDance.mp3');
 
 function init3D() {
 
-  //window size
+  //window size for the model
   const SIZE = 600;
 
   // set up scene
@@ -93,14 +95,22 @@ function animate()
   renderer.render(scene, camera);
 }
 
+//switchAnimation helper is used to transition between animations
 function switchAnimation(newAction)
 {
+  //if current is not new, return --> am i alreadt playing this
+  //if currentAction is false, null, undefined --> is there an animation happening already
+  
   if (!currentAction || currentAction === newAction) return;
-
+  
+  //only runs if currentAction exist and its diff from newAction
+  //fade out the current animation
    currentAction.fadeOut(0.5);
+
+   //reset the animation, fade in, and play
    newAction.reset().fadeIn(0.5).play();
 
-   //update tracker of current action
+   //update tracker of currentAction
    currentAction = newAction;
 }
 
@@ -183,14 +193,15 @@ init3D();
         pikachu_info['sleep'] = false;
         switchAnimation(animations.jump);
         showMessage("pikachu is awake!");
-        //using trigger to notify listeners that the wakeup event was triggered
+
+        //using .trigger() to notify listeners that the wakeup event was triggered
         $(document).trigger('wakeup');
         checkAndUpdatePetInfoInHtml();
-      }, 6000); //10s
+      }, 6000); //6s
     }
 
   
-//using on to create a custom wakeup event to be triggered
+//using .on() to create a custom wakeup event to be triggered
 //after pikachu is done sleeping
 $(document).on('wakeup', function(){
   sleepSound.pause();
@@ -207,10 +218,15 @@ if (pikachu_info['happiness'] >= maxHappiness)
 {
   pikachu_info['happiness'] = maxHappiness;
   
+  //play dance animation once maxHappiness is reached
   if (currentAction !== animations.dance){
+    //reset pikachuDance sound time to 0
       pikachuDance.currentTime = 0;
+    //play the pikachuDance sound
       pikachuDance.play()
+    //switch the animation to dance
       switchAnimation(animations.dance);
+      //show happy message
       showMessage("૮₍´｡ᵔ ꈊ ᵔ｡`₎ა");
 
       //time to switch back to the idle animation once the dance is done
@@ -225,19 +241,19 @@ if (pikachu_info['happiness'] >= maxHappiness)
 
 }
     
-// Updates your HTML with the current values in your pet_info object
+// Updates your HTML with the current values in pikachu_info
 function updatePetInfoInHtml() {
   $('.name').text(pikachu_info['name']);
   $('.weight').text(pikachu_info['weight']);
   $('.happiness').text(pikachu_info['happiness']);
   $('.sleep').text(pikachu_info['sleep'] ? 'Sleeping' : 'Awake');
 
-  // update bar widths
+  // update bar widths for stats
   const happinessPercent = (pikachu_info['happiness'] / maxHappiness) * 100;
   $('.bar-happy').css('width', happinessPercent + '%');
-
   const weightPercent = (pikachu_info['weight'] / 20) * 100; // 20 = max weight
   $('.bar-weight').css('width', Math.min(weightPercent, 100) + '%');
+
 }
 
 function showMessage(message)
